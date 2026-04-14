@@ -1,10 +1,15 @@
-const API_URL = import.meta.env.VITE_API_URL || '';
+// This safely checks for either Vite or Create React App environment variables, 
+// defaulting back to local '/api' if neither is found.
+const API_URL = import.meta.env?.VITE_API_URL || process.env?.REACT_APP_API_URL || ''; 
 const BASE = `${API_URL}/api`;
 
 export async function sendMessage(message, sender = 'user') {
   const res = await fetch(`${BASE}/chat`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true' 
+    },
     body: JSON.stringify({ sender, message }),
   })
   if (!res.ok) {
@@ -21,25 +26,42 @@ export async function getRestaurants({ aspect, polarity, limit = 20, search, cui
   if (search)       params.set('search', search)
   if (cuisine_type) params.set('cuisine_type', cuisine_type)
   params.set('limit', limit)
-  const res = await fetch(`${BASE}/restaurants?${params}`)
+  
+  const res = await fetch(`${BASE}/restaurants?${params}`, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
+  })
   if (!res.ok) throw new Error('Failed to fetch restaurants')
   return res.json()
 }
 
 export async function getRestaurant(name) {
-  const res = await fetch(`${BASE}/restaurants/${encodeURIComponent(name)}`)
+  const res = await fetch(`${BASE}/restaurants/${encodeURIComponent(name)}`, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
+  })
   if (!res.ok) throw new Error('Restaurant not found')
   return res.json()
 }
 
 export async function getStats() {
-  const res = await fetch(`${BASE}/stats`)
+  const res = await fetch(`${BASE}/stats`, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
+  })
   if (!res.ok) throw new Error('Failed to fetch stats')
   return res.json()
 }
 
 export async function getRestaurantInfo(name) {
-  const res = await fetch(`${BASE}/restaurant-info/${encodeURIComponent(name)}`)
+  const res = await fetch(`${BASE}/restaurant-info/${encodeURIComponent(name)}`, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
+  })
   if (!res.ok) return null
   return res.json()
 }
@@ -48,7 +70,10 @@ export async function getRestaurantInfo(name) {
 export async function getLiveReviewsBulk(restaurantName) {
   const res = await fetch(`${BASE}/live-reviews-bulk`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
     body: JSON.stringify({ restaurant_name: restaurantName }),
   })
   if (!res.ok) {
